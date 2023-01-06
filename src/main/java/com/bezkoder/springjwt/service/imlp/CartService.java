@@ -34,4 +34,9 @@ public class CartService implements ICartService {
     public void delete(Long id) {
         cartRepository.deleteById(id);
     }
+
+    @Override
+    public List<Cart> findCartByIdUser(Long id) {
+        return cartRepository.findCartByCustomerId(id);
+    }
 }

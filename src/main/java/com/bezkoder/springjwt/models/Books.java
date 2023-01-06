@@ -23,7 +23,8 @@ public class Books {
     @Column(name = "author")
     private String author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     public Books(Long id, String book, String author, Category category) {

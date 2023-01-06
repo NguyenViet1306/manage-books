@@ -3,6 +3,7 @@ package com.bezkoder.springjwt.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 //import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -63,15 +64,19 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.csrf().ignoringAntMatchers("/**");
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-                .authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .antMatchers("/swagger-ui-custom.html/**").permitAll()
-                .antMatchers("/api-docs/**").permitAll()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and().authorizeRequests().antMatchers(HttpMethod.GET,"/api/books/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/swagger-ui/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/api-docs/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/api/auth/**").permitAll()
 //                .antMatchers("/api/auth/**").permitAll()
 //                .antMatchers("/api/test/**").permitAll()
+                .and().authorizeRequests().antMatchers("/**").permitAll()
+
+//        tất cả các request khác đều cần phải xác thực mới được truy cập
                 .anyRequest().authenticated();
 
         http.authenticationProvider(authenticationProvider());

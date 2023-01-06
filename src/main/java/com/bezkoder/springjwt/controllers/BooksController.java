@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ public class BooksController {
     @Autowired
     IBooksService iBooksService;
 
-//    @GetMapping
+    //    @GetMapping
 //    public ResponseEntity<List<Books>> getAll(@RequestParam String name){
 //        try{
 //            List<Books> booksList = new ArrayList<>();
@@ -37,22 +38,52 @@ public class BooksController {
     @GetMapping
     public ResponseEntity<List<Books>> getAll() {
         try {
-            return new ResponseEntity<>(iBooksService.findAll(),HttpStatus.OK);
+            return new ResponseEntity<>(iBooksService.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-
     @GetMapping("/{id}")
     public ResponseEntity<Books> getById(@PathVariable Long id) {
         Optional<Books> optionalBooks = iBooksService.findById(id);
         if (optionalBooks.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(optionalBooks.get(),HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @GetMapping("/find-name")
+    public ResponseEntity<List<Books>> getByName(@RequestParam String name) {
+        List<Books> booksList = iBooksService.findAllByNameContaining(name);
+        return new ResponseEntity<>(booksList, HttpStatus.OK);
+    }
 
+    @PostMapping
+    public ResponseEntity<Books> createBook(@RequestBody Books books) {
+        try {
+            Books booksCreat = iBooksService.save(books);
+            return new ResponseEntity<>(booksCreat, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping
+    public ResponseEntity<Books> updateBook(@RequestBody Books books,
+                                            @RequestParam Long id) {
+        Optional<Books> books1 = iBooksService.findById(id);
+        if (books1.isPresent()) {
+            iBooksService.save(books);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Books> deleteBook (@PathVariable Long id) {
+        iBooksService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

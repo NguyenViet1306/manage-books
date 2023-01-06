@@ -1,6 +1,5 @@
 package com.bezkoder.springjwt.service.imlp;
 
-import com.bezkoder.springjwt.models.ERole;
 import com.bezkoder.springjwt.models.Role;
 import com.bezkoder.springjwt.repository.RoleRepository;
 import com.bezkoder.springjwt.service.IRoleService;
