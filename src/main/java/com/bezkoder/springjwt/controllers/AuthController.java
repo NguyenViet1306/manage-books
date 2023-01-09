@@ -2,6 +2,7 @@ package com.bezkoder.springjwt.controllers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -104,8 +105,7 @@ public class AuthController {
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
-                Role userRole = iRoleService.findByName(role)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                Optional<Role> userRole = iRoleService.findByName(role);
 //        switch (role) {
 //        case "admin":
 //          Role adminRole = iRoleService.findByName(ERole.ROLE_ADMIN)
@@ -123,8 +123,14 @@ public class AuthController {
 //          Role userRole = iRoleService.findByName(ERole.ROLE_USER)
 //              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 //          roles.add(userRole);
-//        }
+//        }userRole
+                if (userRole.isPresent()){
+                roles.add(userRole.get());}
+//                else {
+//                    userRole.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                }
             });
+
         }
         user.setRoles(roles);
         iUserService.save(user);

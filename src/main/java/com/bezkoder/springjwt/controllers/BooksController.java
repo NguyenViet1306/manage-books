@@ -48,7 +48,7 @@ public class BooksController {
     public ResponseEntity<Books> getById(@PathVariable Long id) {
         Optional<Books> optionalBooks = iBooksService.findById(id);
         if (optionalBooks.isPresent()) {
-            return new ResponseEntity<>(optionalBooks.get(),HttpStatus.OK);
+            return new ResponseEntity<>(optionalBooks.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -63,8 +63,7 @@ public class BooksController {
     @PostMapping
     public ResponseEntity<Books> createBook(@RequestBody Books books) {
         try {
-            Books booksCreat = iBooksService.save(books);
-            return new ResponseEntity<>(booksCreat, HttpStatus.CREATED);
+            return new ResponseEntity<>(iBooksService.save(books), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,16 +72,15 @@ public class BooksController {
     @PutMapping
     public ResponseEntity<Books> updateBook(@RequestBody Books books,
                                             @RequestParam Long id) {
-        Optional<Books> books1 = iBooksService.findById(id);
-        if (books1.isPresent()) {
-            iBooksService.save(books);
-            return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(iBooksService.save(books), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Books> deleteBook (@PathVariable Long id) {
+    public ResponseEntity<Books> deleteBook(@PathVariable Long id) {
         iBooksService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

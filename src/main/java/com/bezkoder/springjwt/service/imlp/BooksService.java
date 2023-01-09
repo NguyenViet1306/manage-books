@@ -36,6 +36,6 @@ public class BooksService implements IBooksService {
 
     @Override
     public List<Books> findAllByNameContaining(String name) {
-        return bookRepository.findAllByNameContaining(name);
+        return bookRepository.findAllByNameContaining("%" + name + "%");
     }
 }

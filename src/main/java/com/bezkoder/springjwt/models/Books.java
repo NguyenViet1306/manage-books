@@ -23,8 +23,11 @@ public class Books {
     @Column(name = "author")
     private String author;
 
+    @Column(name = "category_id")
+    private String categoryId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", columnDefinition = "id", insertable = false, updatable = false)
     private Category category;
 
     public Books(Long id, String book, String author, Category category) {
@@ -67,5 +70,13 @@ public class Books {
 
     public void setCategory(Category category) {
         this.category = category;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 }

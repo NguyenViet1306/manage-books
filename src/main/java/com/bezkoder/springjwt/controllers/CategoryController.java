@@ -52,8 +52,8 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Category> deleteCategory(@RequestParam Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Category> deleteCategory(@PathVariable Long id){
         iCategoryService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

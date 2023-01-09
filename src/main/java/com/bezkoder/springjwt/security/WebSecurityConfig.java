@@ -64,7 +64,6 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf().ignoringAntMatchers("/**");
         http.cors().and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -75,6 +74,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/api/auth/**").permitAll()
 //                .antMatchers("/api/test/**").permitAll()
                 .and().authorizeRequests().antMatchers("/**").permitAll()
+//                .and().authorizeRequests().antMatchers("/api/books/**").permitAll()
 
 //        tất cả các request khác đều cần phải xác thực mới được truy cập
                 .anyRequest().authenticated();

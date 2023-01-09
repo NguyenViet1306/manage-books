@@ -18,8 +18,8 @@ public class CartController {
     ICartService iCartService;
 
     @GetMapping
-    private ResponseEntity<List<Cart>> getAll(@RequestParam Long id) {
-        return new ResponseEntity<>(iCartService.findCartByIdUser(id), HttpStatus.OK);
+    private ResponseEntity<List<Cart>> getAll() {
+        return new ResponseEntity<>(iCartService.findAll(), HttpStatus.OK);
     }
 
     @PostMapping
