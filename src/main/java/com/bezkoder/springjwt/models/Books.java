@@ -26,7 +26,7 @@ public class Books {
     @Column(name = "category_id")
     private String categoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", columnDefinition = "id", insertable = false, updatable = false)
     private Category category;
 
