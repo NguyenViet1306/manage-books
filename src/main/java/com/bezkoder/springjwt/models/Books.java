@@ -23,11 +23,11 @@ public class Books {
     @Column(name = "author")
     private String author;
 
-    @Column(name = "category_id")
-    private String categoryId;
+//    @Column(name = "category_id")
+//    private String categoryId;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "category_id", columnDefinition = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "category_id", columnDefinition = "id", insertable = false, updatable = true)
     private Category category;
 
     public Books(Long id, String book, String author, Category category) {
@@ -72,11 +72,22 @@ public class Books {
         this.category = category;
     }
 
-    public String getCategoryId() {
-        return categoryId;
-    }
+//    public String getCategoryId() {
+//        return categoryId;
+//    }
+//
+//    public void setCategoryId(String categoryId) {
+//        this.categoryId = categoryId;
+//    }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
+
+    @Override
+    public String toString() {
+        return "Books{" +
+                "id=" + id +
+                ", book='" + book + '\'' +
+                ", author='" + author + '\'' +
+                ", category=" + category +
+                '}';
     }
 }

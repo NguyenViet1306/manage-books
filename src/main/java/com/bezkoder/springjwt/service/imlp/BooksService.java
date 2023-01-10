@@ -4,6 +4,8 @@ import com.bezkoder.springjwt.models.Books;
 import com.bezkoder.springjwt.repository.BookRepository;
 import com.bezkoder.springjwt.service.IBooksService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,4 +40,16 @@ public class BooksService implements IBooksService {
     public List<Books> findAllByNameContaining(String name) {
         return bookRepository.findAllByNameContaining("%" + name + "%");
     }
+
+
+    @Override
+    public Page<Books> findAllBooks(Pageable pageable) {
+        return bookRepository.findAllBooks(pageable);
+    }
+
+    @Override
+    public Page<Books> findAllCategory(Pageable pageable){
+        return bookRepository.findAllCategory(pageable);
+    }
+
 }

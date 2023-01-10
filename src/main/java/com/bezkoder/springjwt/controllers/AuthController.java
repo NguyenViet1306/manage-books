@@ -125,7 +125,7 @@ public class AuthController {
 //          roles.add(userRole);
 //        }userRole
                 if (userRole.isPresent()){
-                roles.add(userRole.get());}
+                    roles.add(userRole.get());}
 //                else {
 //                    userRole.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 //                }
