@@ -8,11 +8,17 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IBooksService extends IService<Books> {
-    List<Books> findAllByNameContaining(String name);
+//    Page<Books> findAllByNameContaining(String name, Pageable pageable);
 
-    Page<Books> findAllBooks(Pageable pageable);
+//    Page<Books> findAllBooks(Pageable pageable);
 
-    Page<Books> findAllCategory(Pageable pageable);
+//    Page<Books> findAllCategory(Pageable pageable);
+
+//    Page<Books> findAllCategory(String text,Pageable pageable);
+
+    Page<Books> findByAll(String nameSearch, Pageable pageable);
+
+
 
 
 }

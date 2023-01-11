@@ -36,20 +36,37 @@ public class BooksService implements IBooksService {
         bookRepository.deleteById(id);
     }
 
-    @Override
-    public List<Books> findAllByNameContaining(String name) {
-        return bookRepository.findAllByNameContaining("%" + name + "%");
-    }
+//    @Override
+//    public Page<Books> findAllByNameContaining(String name, Pageable pageable) {
+//        return bookRepository.findAllByNameContaining("%" + name + "%", pageable);
+//    }
 
 
-    @Override
-    public Page<Books> findAllBooks(Pageable pageable) {
-        return bookRepository.findAllBooks(pageable);
-    }
+//    @Override
+//    public Page<Books> findAllBooks(Pageable pageable) {
+//        return bookRepository.findAllBooks(pageable);
+//    }
+
+//    @Override
+//    public Page<Books> findAllCategory(Pageable pageable) {
+//        return null;
+//    }
+
+//    @Override
+//    public Page<Books> findAllCategory(Pageable pageable) {
+//        return bookRepository.findAllCategory(pageable);
+//    }
+
+//    @Override
+//    public Page<Books> findAllCategory(String cate,
+//                                       Pageable pageable) {
+//        return bookRepository.findAllCategory(cate, pageable);
+//    }
 
     @Override
-    public Page<Books> findAllCategory(Pageable pageable){
-        return bookRepository.findAllCategory(pageable);
+    public Page<Books> findByAll(String nameSearch, Pageable pageable) {
+        return bookRepository.findByAll("%" + nameSearch + "%", pageable);
     }
+
 
 }

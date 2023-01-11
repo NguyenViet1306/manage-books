@@ -1,6 +1,7 @@
 package com.bezkoder.springjwt.controllers;
 
 import com.bezkoder.springjwt.models.Books;
+import com.bezkoder.springjwt.repository.CategoryRepository;
 import com.bezkoder.springjwt.service.IBooksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,30 +21,40 @@ public class BooksController {
 
     @Autowired
     IBooksService iBooksService;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> getAll(@RequestParam Integer pageNum,
-                                                      @RequestParam Integer pageSize,
-                                                      @RequestParam String text) {
-        try {
-            Sort sort = Sort.by(Sort.Direction.ASC, text);
-            List<Books> booksList;
-            Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-
-            Page<Books> booksPage = iBooksService.findAllBooks(pageable);
-            booksList = booksPage.getContent();
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("books", booksList);
-            response.put("currentPage", booksPage.getNumber());
-            response.put("totalItems", booksPage.getTotalElements());
-            response.put("totalPages", booksPage.getTotalPages());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+//    @GetMapping
+//    public ResponseEntity<Map<String, Object>> getAll(@RequestParam(required = false) Integer pageNum,
+//                                                      @RequestParam Integer pageSize,
+//                                                      @RequestParam(required = false) String text,
+//                                                      @RequestParam(required = false) String nameSearch) {
+//        try {
+//            List<Books> booksList = new ArrayList<Books>();
+//            Sort sort = Sort.by(text);
+//
+//            Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+////            Pageable pageable = PageRequest.of(pageNum, pageSize);
+//            Page<Books> booksPage;
+////            if (booksList) {
+//            booksPage = iBooksService.findAllCategory(text, pageable);
+////            } else {
+//            booksPage = iBooksService.findAllByNameContaining(nameSearch, pageable);
+////            }
+//            booksList = booksPage.getContent();
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("books", booksList);
+//            response.put("currentPage", booksPage.getNumber());
+//            response.put("totalItems", booksPage.getTotalElements());
+//            response.put("totalPages", booksPage.getTotalPages());
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
 //    @GetMapping
 //    public ResponseEntity<Page<Books>> getAll(@RequestParam Integer pageNum,
 //                                              @RequestParam Integer pageSize) {
@@ -57,17 +68,31 @@ public class BooksController {
 //        }
 //    }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Books> getById(@PathVariable Long id) {
-        Optional<Books> optionalBooks = iBooksService.findById(id);
-        if (optionalBooks.isPresent()) {
-            return new ResponseEntity<>(optionalBooks.get(), HttpStatus.OK);
-        } else {
+    @GetMapping("/all")
+    public ResponseEntity<Map<String, Object>> getByAll(@RequestParam(required = false) Integer pageNum,
+                                                        @RequestParam Integer pageSize,
+                                                        @RequestParam(required = false) String nameSearch,
+                                                        @RequestParam(required = false) String textSort) {
+        try {
+            Pageable pageable = PageRequest.of(pageNum, pageSize);
+            Page<Books> booksPage = iBooksService.findByAll(nameSearch, pageable);
+
+            List<Books> booksList = booksPage.getContent();
+
+            Map<String, Object> page = new HashMap<>();
+            page.put("books", booksList);
+            page.put("currentPage", booksPage.getNumber());
+            page.put("totalItems", booksPage.getTotalElements());
+            page.put("totalPages", booksPage.getTotalPages());
+
+            return new ResponseEntity<>(page, HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-//    @GetMapping("/sort-by")
+
+    //    @GetMapping("/sort-by")
 //    public ResponseEntity<Map<String, Object>> getBySortAuthor(@RequestParam Integer pageNum,
 //                                                               @RequestParam Integer pageSize,
 //                                                               @RequestParam String text) {
@@ -90,33 +115,24 @@ public class BooksController {
 //            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 //        }
 //    }
+//
+    //    @GetMapping("/find-name")
+//    public ResponseEntity<List<Books>> getByName(@RequestParam String name) {
+//        List<Books> booksList = iBooksService.findAllByNameContaining(name);
+//        return new ResponseEntity<>(booksList, HttpStatus.OK);
+//    }
 
-    @GetMapping("/sort-by-category")
-    public ResponseEntity<Map<String, Object>> getBySortCategory(@RequestParam Integer pageNum,
-                                                                 @RequestParam Integer pageSize) {
-        try {
-            Pageable pageable = PageRequest.of(pageNum, pageSize);
-            Page<Books> booksPage = iBooksService.findAllCategory(pageable);
 
-            List<Books> booksList = booksPage.getContent();
-
-            Map<String, Object> page = new HashMap<>();
-            page.put("books", booksList);
-            page.put("currentPage", booksPage.getNumber());
-            page.put("totalItems", booksPage.getTotalElements());
-            page.put("totalPages", booksPage.getTotalPages());
-
-            return new ResponseEntity<>(page, HttpStatus.OK);
-        } catch (Exception e) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Books> getById(@PathVariable Long id) {
+        Optional<Books> optionalBooks = iBooksService.findById(id);
+        if (optionalBooks.isPresent()) {
+            return new ResponseEntity<>(optionalBooks.get(), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @GetMapping("/find-name")
-    public ResponseEntity<List<Books>> getByName(@RequestParam String name) {
-        List<Books> booksList = iBooksService.findAllByNameContaining(name);
-        return new ResponseEntity<>(booksList, HttpStatus.OK);
-    }
 
     @PostMapping
     public ResponseEntity<Books> createBook(@RequestBody Books books) {
@@ -131,7 +147,9 @@ public class BooksController {
     public ResponseEntity<Books> updateBook(@RequestBody Books books,
                                             @RequestParam Long id) {
         try {
-            Books booksUpdate = iBooksService.findById(id).get();
+            Books booksFind = iBooksService.findById(id).get();
+//            if ()
+            Books booksUpdate = iBooksService.save(books);
             return new ResponseEntity<>(booksUpdate, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
