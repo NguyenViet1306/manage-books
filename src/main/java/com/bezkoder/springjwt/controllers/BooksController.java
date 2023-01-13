@@ -1,5 +1,6 @@
 package com.bezkoder.springjwt.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -111,14 +113,42 @@ public class BooksController {
 //        return new ResponseEntity<>(booksList, HttpStatus.OK);
 //    }
 
+	//// pt chon kieu sap xep
+	private Sort.Direction sortDirection(String direction) {
+		if (direction.equals("asc")) {
+			return Sort.Direction.ASC;
+		} else if (direction.equals("desc")) {
+			return Sort.Direction.DESC;
+		}
+		return Sort.Direction.ASC;
+	}
+
 	@GetMapping("/all")
 	public ResponseEntity<Map<String, Object>> getByAll(@RequestParam(defaultValue = "0") Integer pageNum,
 			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(defaultValue = "") String nameSearch,
-			@RequestParam(defaultValue = "books") String[] textColumn,
-			@RequestParam(defaultValue = "asc") String textSort) {
-//        try {
-//		Sort sort = Sort.by(textColumn);
-		Pageable pageable = PageRequest.of(pageNum, pageSize, textColumn);
+			@RequestParam(required = false) String[] textSort) {
+//        try {		
+
+		List<Order> orders = new ArrayList<Order>();
+		//// tao 1 mang string mac dinh
+		String[] sortDefault = { "books.id@asc" };
+		if (textSort == null || textSort.length == 0) {
+			textSort = sortDefault;
+		}
+
+		for (String orderSort : textSort) {
+			//// su dung contains de tim ky tu trong chuoi
+			if (orderSort.contains("@")) {
+				//// orderSort = "column, direction" ; sd Split cat chuoi de lay value
+				String[] textSortSplit = orderSort.split("@");
+				orders.add(new Order(sortDirection(textSortSplit[1]), textSortSplit[0]));
+			} else {
+				//// textSort = [column, direction]
+				orders.add(new Order(sortDirection(""), orderSort));
+			}
+		}
+
+		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(orders));
 		Page<Books> booksPage = iBooksService.findByAll(nameSearch, pageable);
 
 		// getContent() dung de truy xuat cac ban ghi trong trang

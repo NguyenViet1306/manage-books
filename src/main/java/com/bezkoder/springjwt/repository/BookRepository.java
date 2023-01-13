@@ -22,11 +22,12 @@ public interface BookRepository extends JpaRepository<Books, Long> {
 //    @Query(value = "select * from books", countQuery = "SELECT count(*) FROM books", nativeQuery = true)
 //    Page<Books> findAllBooks(Pageable pageable);
 
-//    @Query(value = "SELECT * from BOOKS join CATEGORIES on CATEGORY_ID = CATEGORIES.ID order by NAME_CATEGORY" ,countQuery = "SELECT count(*) FROM BOOKS", nativeQuery = true )
-//    Page<Books> findAllCategory(Pageable pageable);
+//    @Query(value = "SELECT * from BOOKS join CATEGORIES on BOOKS.CATEGORY_ID = CATEGORIES.ID where (:name is null OR BOOKS.NAME LIKE %:name%)" ,countQuery = "SELECT count(*) FROM BOOKS (:name is null OR BOOKS.NAME LIKE %:name%)", nativeQuery = true )
+//    Page<Books> findByAll(@Param("name") String nameSearch, Pageable pageable);
 
-	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.BOOKS LIKE %:name%)", countQuery = "select count(*) FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.BOOKS LIKE %:name%) ", nativeQuery = true)
-	Page<Books> findByAll(@Param("name")String nameSearch, Pageable pageable);
-
+	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.NAME LIKE %:name%)",
+			countQuery = "select count(*) FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.NAME LIKE %:name%) ",
+			nativeQuery = true)
+	Page<Books> findByAll(@Param("name") String nameSearch, Pageable pageable);
 
 }
