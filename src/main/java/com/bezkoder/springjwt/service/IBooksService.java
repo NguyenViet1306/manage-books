@@ -3,7 +3,7 @@ package com.bezkoder.springjwt.service;
 import com.bezkoder.springjwt.models.Books;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ public interface IBooksService extends IService<Books> {
 
 //    Page<Books> findAllCategory(String text,Pageable pageable);
 
-    Page<Books> findByAll(String nameSearch, Pageable pageable);
+	Page<Books> findByAll(String nameSearch, Pageable pageable);
 
 
 

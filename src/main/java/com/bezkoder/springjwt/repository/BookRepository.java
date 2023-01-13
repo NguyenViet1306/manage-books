@@ -2,10 +2,12 @@ package com.bezkoder.springjwt.repository;
 
 import com.bezkoder.springjwt.models.Books;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -23,9 +25,8 @@ public interface BookRepository extends JpaRepository<Books, Long> {
 //    @Query(value = "SELECT * from BOOKS join CATEGORIES on CATEGORY_ID = CATEGORIES.ID order by NAME_CATEGORY" ,countQuery = "SELECT count(*) FROM BOOKS", nativeQuery = true )
 //    Page<Books> findAllCategory(Pageable pageable);
 
-    @Query(value = "select * FROM BOOKS JOIN CATEGORIES ON BOOKS.CATEGORY_ID = CATEGORIES.ID WHERE (BOOKS.BOOKS LIKE ?1 OR ?1 IS NULL ) ", countQuery = "SELECT count(*) FROM BOOKS WHERE (BOOKS.BOOKS LIKE ?1 OR ?1 IS NULL)", nativeQuery = true)
-    Page<Books> findByAll(String nameSearch, Pageable pageable);
-
+	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.BOOKS LIKE %:name%)", countQuery = "select count(*) FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.BOOKS LIKE %:name%) ", nativeQuery = true)
+	Page<Books> findByAll(@Param("name")String nameSearch, Pageable pageable);
 
 
 }
