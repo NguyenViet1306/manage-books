@@ -39,80 +39,6 @@ public class BooksController {
 	@Autowired
 	CategoryRepository categoryRepository;
 
-//    @GetMapping
-//    public ResponseEntity<Map<String, Object>> getAll(@RequestParam(required = false) Integer pageNum,
-//                                                      @RequestParam Integer pageSize,
-//                                                      @RequestParam(required = false) String text,
-//                                                      @RequestParam(required = false) String nameSearch) {
-//        try {
-//            List<Books> booksList = new ArrayList<Books>();
-//            Sort sort = Sort.by(text);
-//
-//            Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
-////            Pageable pageable = PageRequest.of(pageNum, pageSize);
-//            Page<Books> booksPage;
-////            if (booksList) {
-//            booksPage = iBooksService.findAllCategory(text, pageable);
-////            } else {
-//            booksPage = iBooksService.findAllByNameContaining(nameSearch, pageable);
-////            }
-//            booksList = booksPage.getContent();
-//
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("books", booksList);
-//            response.put("currentPage", booksPage.getNumber());
-//            response.put("totalItems", booksPage.getTotalElements());
-//            response.put("totalPages", booksPage.getTotalPages());
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//    @GetMapping
-//    public ResponseEntity<Page<Books>> getAll(@RequestParam Integer pageNum,
-//                                              @RequestParam Integer pageSize) {
-//        try {
-//            Sort sort = Sort.by(Sort.Direction.ASC, "books");
-//            Pageable pageable = PageRequest.of(pageSize, pageNum, sort);
-//
-//            return new ResponseEntity<>(iBooksService.findAllBooks(pageable), HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
-	// @GetMapping("/sort-by")
-//    public ResponseEntity<Map<String, Object>> getBySortAuthor(@RequestParam Integer pageNum,
-//                                                               @RequestParam Integer pageSize,
-//                                                               @RequestParam String text) {
-//        try {
-//            Sort sortAuthor = Sort.by(Sort.Direction.ASC, text);
-//
-//            Pageable pageable = PageRequest.of(pageNum, pageSize, sortAuthor);
-//            Page<Books> booksPage = iBooksService.findAllBooks(pageable);
-//
-//            List<Books> booksList = booksPage.getContent();
-//
-//            Map<String, Object> page = new HashMap<>();
-//            page.put("books", booksList);
-//            page.put("currentPage", booksPage.getNumber());
-//            page.put("totalItems", booksPage.getTotalElements());
-//            page.put("totalPages", booksPage.getTotalPages());
-//
-//            return new ResponseEntity<>(page, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-	// @GetMapping("/find-name")
-//    public ResponseEntity<List<Books>> getByName(@RequestParam String name) {
-//        List<Books> booksList = iBooksService.findAllByNameContaining(name);
-//        return new ResponseEntity<>(booksList, HttpStatus.OK);
-//    }
-
 	//// pt chon kieu sap xep
 	private Sort.Direction sortDirection(String direction) {
 		if (direction.equals("asc")) {
@@ -125,17 +51,16 @@ public class BooksController {
 
 	@GetMapping("/all")
 	public ResponseEntity<Map<String, Object>> getByAll(@RequestParam(defaultValue = "0") Integer pageNum,
-			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(defaultValue = "") String nameSearch,
+			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam(required = false) String[] textSort) {
-//        try {		
 
+//        try {
 		List<Order> orders = new ArrayList<Order>();
 		//// tao 1 mang string mac dinh
 		String[] sortDefault = { "books.id@asc" };
 		if (textSort == null || textSort.length == 0) {
 			textSort = sortDefault;
 		}
-
 		for (String orderSort : textSort) {
 			//// su dung contains de tim ky tu trong chuoi
 			if (orderSort.contains("@")) {
@@ -149,7 +74,7 @@ public class BooksController {
 		}
 
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(orders));
-		Page<Books> booksPage = iBooksService.findByAll(nameSearch, pageable);
+		Page<Books> booksPage = iBooksService.findByAll(keyword, pageable);
 
 		// getContent() dung de truy xuat cac ban ghi trong trang
 		List<Books> booksList = booksPage.getContent();

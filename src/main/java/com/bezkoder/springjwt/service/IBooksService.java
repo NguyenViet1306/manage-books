@@ -16,7 +16,7 @@ public interface IBooksService extends IService<Books> {
 
 //    Page<Books> findAllCategory(String text,Pageable pageable);
 
-	Page<Books> findByAll(String nameSearch, Pageable pageable);
+	Page<Books> findByAll( String keyword, Pageable pageable);
 
 
 
