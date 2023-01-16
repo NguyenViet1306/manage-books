@@ -40,7 +40,7 @@ public class BooksService implements IBooksService {
 
 	@Override
 	public Page<Books> findByAll(String nameSearch, Pageable pageable) {
-		return bookRepository.findByAll(nameSearch, pageable);
+		return bookRepository.findByAll("%" + nameSearch + "%", pageable);
 	}
 
 //    @Override

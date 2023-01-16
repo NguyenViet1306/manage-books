@@ -22,12 +22,17 @@ public interface BookRepository extends JpaRepository<Books, Long> {
 //    @Query(value = "select * from books", countQuery = "SELECT count(*) FROM books", nativeQuery = true)
 //    Page<Books> findAllBooks(Pageable pageable);
 
-//    @Query(value = "SELECT * from BOOKS join CATEGORIES on BOOKS.CATEGORY_ID = CATEGORIES.ID where (:name is null OR BOOKS.NAME LIKE %:name%)" ,countQuery = "SELECT count(*) FROM BOOKS (:name is null OR BOOKS.NAME LIKE %:name%)", nativeQuery = true )
-//    Page<Books> findByAll(@Param("name") String nameSearch, Pageable pageable);
-
-	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.NAME LIKE %:name%)",
-			countQuery = "select count(*) FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR BOOKS.NAME LIKE %:name%) ",
-			nativeQuery = true)
+	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and"
+			+ "(:name is null OR LOWER(BOOKS.NAME) LIKE LOWER(:name) OR LOWER(BOOKS.AUTHOR) LIKE LOWER(:name) "
+			+ "OR LOWER(CATEGORIES.name) LIKE LOWER(:name)) " 
+			,countQuery = "SELECT count(*) FROM BOOKS,CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and"
+					+ "(:name is null OR LOWER(BOOKS.NAME) LIKE LOWER(:name)or LOWER(BOOKS.AUTHOR) LIKE LOWER(:name)"
+					+ "or LOWER(categories.name) LIKE LOWER(:name))"
+					, nativeQuery = true)
 	Page<Books> findByAll(@Param("name") String nameSearch, Pageable pageable);
+
+//	@Query(value = "select * FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR LOWER(BOOKS.NAME) LIKE LOWER(:name))",
+//  countQuery = "select count(*) FROM BOOKS , CATEGORIES  WHERE BOOKS.CATEGORY_ID = CATEGORIES.ID and (:name is null OR LOWER(BOOKS.NAME) LIKE LOWER(:name))", nativeQuery = true)
+//	Page<Books> findByAll(@Param("name") String nameSearch, Pageable pageable);
 
 }
