@@ -54,7 +54,6 @@ public class BooksController {
 			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(defaultValue = "") String keyword,
 			@RequestParam(required = false) String[] textSort) {
 
-//        try {
 		List<Order> orders = new ArrayList<Order>();
 		//// tao 1 mang string mac dinh
 		String[] sortDefault = { "books.id@asc" };
@@ -72,13 +71,14 @@ public class BooksController {
 				orders.add(new Order(sortDirection(""), orderSort));
 			}
 		}
+		
+
 
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(orders));
 		Page<Books> booksPage = iBooksService.findByAll(keyword, pageable);
 
 		// getContent() dung de truy xuat cac ban ghi trong trang
 		List<Books> booksList = booksPage.getContent();
-
 		Map<String, Object> page = new HashMap<>();
 		page.put("books", booksList);
 		page.put("currentPage", booksPage.getNumber());
@@ -86,9 +86,6 @@ public class BooksController {
 		page.put("totalPages", booksPage.getTotalPages());
 
 		return new ResponseEntity<>(page, HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
 	}
 
 	@GetMapping("/{id}")
