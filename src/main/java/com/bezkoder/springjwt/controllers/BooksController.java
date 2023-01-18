@@ -51,8 +51,9 @@ public class BooksController {
 
 	@GetMapping("/all")
 	public ResponseEntity<Map<String, Object>> getByAll(@RequestParam(defaultValue = "0") Integer pageNum,
-			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(defaultValue = "") String keyword,
-			@RequestParam(required = false) String[] textSort) {
+			@RequestParam(defaultValue = "5") Integer pageSize, @RequestParam(required = false) String[] textSort,
+			@RequestParam(defaultValue = "") String keyword, @RequestParam(defaultValue = "") String bookName,
+			@RequestParam(defaultValue = "") String authorName, @RequestParam(defaultValue = "") String categoryName) {
 
 		List<Order> orders = new ArrayList<Order>();
 		//// tao 1 mang string mac dinh
@@ -71,11 +72,9 @@ public class BooksController {
 				orders.add(new Order(sortDirection(""), orderSort));
 			}
 		}
-		
-
 
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(orders));
-		Page<Books> booksPage = iBooksService.findByAll(keyword, pageable);
+		Page<Books> booksPage = iBooksService.findByAll(bookName, authorName, categoryName, keyword, pageable);
 
 		// getContent() dung de truy xuat cac ban ghi trong trang
 		List<Books> booksList = booksPage.getContent();

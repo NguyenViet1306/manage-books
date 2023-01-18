@@ -1,17 +1,16 @@
 package com.bezkoder.springjwt.service.imlp;
 
-import com.bezkoder.springjwt.models.Books;
-import com.bezkoder.springjwt.repository.BookRepository;
-import com.bezkoder.springjwt.service.IBooksService;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Optional;
+import com.bezkoder.springjwt.models.Books;
+import com.bezkoder.springjwt.repository.BookRepository;
+import com.bezkoder.springjwt.service.IBooksService;
 
 @Service
 public class BooksService implements IBooksService {
@@ -39,9 +38,15 @@ public class BooksService implements IBooksService {
 	}
 
 	@Override
-	public Page<Books> findByAll(String keyword, Pageable pageable) {
-		return bookRepository.findByAll(keyword, pageable);
+	public Page<Books> findByAll(String bookName, String authorName, String categoryName, String keyword,
+			Pageable pageable) {
+		return bookRepository.findByAll(bookName, authorName, categoryName, keyword, pageable);
 	}
+
+//	@Override
+//	public Page<Books> findByAll(String keyword, Pageable pageable) {
+//		return bookRepository.findByAll(keyword, pageable);
+//	}
 
 //    @Override
 //    public Page<Books> findAllBooks(Pageable pageable) {
