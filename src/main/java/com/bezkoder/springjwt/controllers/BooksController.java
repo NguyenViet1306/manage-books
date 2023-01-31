@@ -102,6 +102,7 @@ public class BooksController {
     @Operation()
     @SecurityRequirement(name = "bearerAuth")
 	@PostMapping
+	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> createBook(@RequestBody Books books) {
 		try {
 			return new ResponseEntity<>(iBooksService.save(books), HttpStatus.CREATED);
@@ -113,7 +114,7 @@ public class BooksController {
     @Operation()
     @SecurityRequirement(name = "bearerAuth")
 	@PutMapping
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> updateBook(@RequestBody Books books, @RequestParam Long id) {
 		try {
 			Optional<Books> booksFind = iBooksService.findById(id);
@@ -131,6 +132,7 @@ public class BooksController {
     @Operation()
     @SecurityRequirement(name = "bearerAuth")
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> deleteBook(@PathVariable Long id) {
 		iBooksService.delete(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);

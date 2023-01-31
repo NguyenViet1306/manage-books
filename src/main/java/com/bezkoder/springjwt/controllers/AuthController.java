@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -37,6 +38,8 @@ import com.bezkoder.springjwt.security.jwt.JwtUtils;
 import com.bezkoder.springjwt.security.services.UserDetailsImpl;
 import com.bezkoder.springjwt.service.IRoleService;
 import com.bezkoder.springjwt.service.IUserService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -139,6 +142,7 @@ public class AuthController {
 	}
 
 	@PutMapping("/change-password")
+    @SecurityRequirement(name = "bearerAuth")
 	public ResponseEntity<User> changePassword(@Valid @RequestBody ChangePassword changePassword,
 			@RequestParam Long id) {
 		User user = iUserService.findById(id).get();
@@ -154,6 +158,7 @@ public class AuthController {
 	}
 	
 	@DeleteMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<User> blockAndUnblockUser(@RequestParam("id") Long id){
 		iUserService.blockUser(id);
 		return new ResponseEntity<>(HttpStatus.OK);

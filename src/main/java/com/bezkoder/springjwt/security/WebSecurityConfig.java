@@ -69,7 +69,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 //				.and().authorizeRequests().antMatchers("/api/books/**").hasAnyAuthority("ADMIN", "MANAGER")
 				.and().authorizeRequests().antMatchers("/swagger-ui/**").permitAll()
 				.and().authorizeRequests().antMatchers("/api-docs/**").permitAll()
-				.and().authorizeRequests().antMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+				.and().authorizeRequests().antMatchers("/api/auth/**").permitAll()
 //                .antMatchers("/api/auth/**").permitAll()
 //                .antMatchers("/api/test/**").permitAll()
 //                .and().authorizeRequests().antMatchers("/**").permitAll()

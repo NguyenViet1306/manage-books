@@ -3,6 +3,7 @@ package com.bezkoder.springjwt.security.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.bezkoder.springjwt.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.ToString;
 
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
@@ -38,12 +41,16 @@ public class UserDetailsImpl implements UserDetails {
 		this.blockUser = blockUser;
 	}
 
+	
+// su dung noi chuoi String de them "ROLE_" khi do role tra ve là "ROLE_(ten role)"
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+				.map(role -> new SimpleGrantedAuthority("ROLE_"+role.getName())).collect(Collectors.toList());
 
+				
 		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), authorities, user.getBlockUser());
 	}
+
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
