@@ -10,4 +10,6 @@ public interface IUserService extends IService<User> {
     Boolean existsByUsername(String username);
 
     Boolean existsByEmail(String email);
+    
+    void blockUser(Long id);
 }

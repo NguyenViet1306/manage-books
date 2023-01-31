@@ -49,4 +49,14 @@ public class UserService implements IUserService {
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+
+	@Override
+	public void blockUser(Long id) {
+		User user = findById(id).get();
+
+		user.setBlockUser(!user.getBlockUser());
+		userRepository.save(user);
+	}
+    
+    
 }

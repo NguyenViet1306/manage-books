@@ -19,6 +19,8 @@ public class SignupRequest {
   @NotBlank
   @Size(min = 6, max = 40)
   private String password;
+  
+  private Boolean blockUser = false;
 
   public String getUsername() {
     return username;
@@ -51,4 +53,14 @@ public class SignupRequest {
   public void setRole(Set<String> role) {
     this.role = role;
   }
+
+public Boolean getBlockUser() {
+	return blockUser;
+}
+
+public void setBlockUser(Boolean blockUser) {
+	this.blockUser = blockUser;
+}
+  
+  
 }

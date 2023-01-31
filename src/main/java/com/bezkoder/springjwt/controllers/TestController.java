@@ -33,7 +33,7 @@ public class TestController {
 
 
   @Operation()
-  @SecurityRequirement(name = "Bearer Authentication")
+  @SecurityRequirement(name = "bearerAuth")
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminAccess() {

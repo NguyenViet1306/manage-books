@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +25,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bezkoder.springjwt.models.Books;
 import com.bezkoder.springjwt.repository.CategoryRepository;
 import com.bezkoder.springjwt.service.IBooksService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @CrossOrigin("*")
@@ -97,6 +99,8 @@ public class BooksController {
 		}
 	}
 
+    @Operation()
+    @SecurityRequirement(name = "bearerAuth")
 	@PostMapping
 	public ResponseEntity<Books> createBook(@RequestBody Books books) {
 		try {
@@ -106,7 +110,10 @@ public class BooksController {
 		}
 	}
 
+    @Operation()
+    @SecurityRequirement(name = "bearerAuth")
 	@PutMapping
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Books> updateBook(@RequestBody Books books, @RequestParam Long id) {
 		try {
 			Optional<Books> booksFind = iBooksService.findById(id);
@@ -121,6 +128,8 @@ public class BooksController {
 		}
 	}
 
+    @Operation()
+    @SecurityRequirement(name = "bearerAuth")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Books> deleteBook(@PathVariable Long id) {
 		iBooksService.delete(id);
