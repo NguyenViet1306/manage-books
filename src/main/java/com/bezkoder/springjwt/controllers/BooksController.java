@@ -34,6 +34,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/books")
+@SecurityRequirement(name = "bearerAuth")
 public class BooksController {
 
 	@Autowired
@@ -100,7 +101,6 @@ public class BooksController {
 	}
 
     @Operation()
-    @SecurityRequirement(name = "bearerAuth")
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> createBook(@RequestBody Books books) {
@@ -112,7 +112,6 @@ public class BooksController {
 	}
 
     @Operation()
-    @SecurityRequirement(name = "bearerAuth")
 	@PutMapping
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> updateBook(@RequestBody Books books, @RequestParam Long id) {
@@ -130,7 +129,6 @@ public class BooksController {
 	}
 
     @Operation()
-    @SecurityRequirement(name = "bearerAuth")
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> deleteBook(@PathVariable Long id) {

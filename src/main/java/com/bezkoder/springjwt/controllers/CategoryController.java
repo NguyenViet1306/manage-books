@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-//@PreAuthorize("hasRole('ADMIN')")
-//@SecurityRequirement(name = "Bearer Authentication")
+@PreAuthorize("hasRole('ADMIN','MANAGER')")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/api/categories")

@@ -143,6 +143,7 @@ public class AuthController {
 
 	@PutMapping("/change-password")
     @SecurityRequirement(name = "bearerAuth")
+	@PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
 	public ResponseEntity<User> changePassword(@Valid @RequestBody ChangePassword changePassword,
 			@RequestParam Long id) {
 		User user = iUserService.findById(id).get();
@@ -159,6 +160,7 @@ public class AuthController {
 	
 	@DeleteMapping
 	@PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
 	public ResponseEntity<User> blockAndUnblockUser(@RequestParam("id") Long id){
 		iUserService.blockUser(id);
 		return new ResponseEntity<>(HttpStatus.OK);
