@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.bezkoder.springjwt.models.Books;
+import com.bezkoder.springjwt.models.DTO.VNCharacterUtils;
 import com.bezkoder.springjwt.repository.CategoryRepository;
 import com.bezkoder.springjwt.service.IBooksService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,7 +78,7 @@ public class BooksController {
 		}
 
 		Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by(orders));
-		Page<Books> booksPage = iBooksService.findByAll(bookName, authorName, categoryName, keyword, pageable);
+		Page<Books> booksPage = iBooksService.findByNameContaining(bookName, authorName, categoryName, keyword, pageable);
 
 		// getContent() dung de truy xuat cac ban ghi trong trang
 		List<Books> booksList = booksPage.getContent();
@@ -100,10 +101,10 @@ public class BooksController {
 		}
 	}
 
-    @Operation()
+	@Operation()
 	@PostMapping
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
-	public ResponseEntity<Books> createBook(@RequestBody Books books) {
+	public ResponseEntity<Books> createBook(@RequestBody Books books ) {
 		try {
 			return new ResponseEntity<>(iBooksService.save(books), HttpStatus.CREATED);
 		} catch (Exception e) {
@@ -111,7 +112,7 @@ public class BooksController {
 		}
 	}
 
-    @Operation()
+	@Operation()
 	@PutMapping
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> updateBook(@RequestBody Books books, @RequestParam Long id) {
@@ -128,11 +129,12 @@ public class BooksController {
 		}
 	}
 
-    @Operation()
+	@Operation()
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('ADMIN','MANAGER')")
 	public ResponseEntity<Books> deleteBook(@PathVariable Long id) {
 		iBooksService.delete(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
+
 }

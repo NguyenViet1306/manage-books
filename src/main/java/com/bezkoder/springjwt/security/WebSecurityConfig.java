@@ -65,7 +65,7 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 		http.cors().and().csrf().disable().exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and().authorizeRequests().antMatchers("/api/books/**").permitAll()
-//				.and().authorizeRequests().antMatchers(HttpMethod.GET, "/api/books/**").permitAll()
+				.and().authorizeRequests().antMatchers(HttpMethod.GET, "/api/books/**").permitAll()
 //				.and().authorizeRequests().antMatchers("/api/books/**").hasAnyAuthority("ADMIN", "MANAGER")
 				.and().authorizeRequests().antMatchers("/swagger-ui/**").permitAll()
 				.and().authorizeRequests().antMatchers("/api-docs/**").permitAll()

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -19,8 +20,14 @@ public class CartController {
 
     @GetMapping
     private ResponseEntity<List<Cart>> getAll() {
-        return new ResponseEntity<>(iCartService.findAll(), HttpStatus.OK);
-    }
+    	try {
+    		List<Cart> carts = new ArrayList<Cart>();
+    		carts.addAll(iCartService.findAll());
+    		return new ResponseEntity<>(HttpStatus.OK);
+    	} catch (Exception e) {
+    		return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+          }
 
     @PostMapping
     public ResponseEntity<Cart> createCard(@RequestBody Cart cart) {
