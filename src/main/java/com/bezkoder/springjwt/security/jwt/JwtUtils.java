@@ -14,46 +14,51 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.bezkoder.springjwt.security.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 
+
 @Component
-public class JwtUtils {
-	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
+public class JwtUtils { // class mã hóa thông tin user
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-	@Value("${bezkoder.app.jwtSecret}")
-	private String jwtSecret;
+    @Value("${bezkoder.app.jwtSecret}")
+    private String jwtSecret;
 
-	@Value("${bezkoder.app.jwtExpirationMs}")
-	private int jwtExpirationMs;
 
-	public String generateJwtToken(Authentication authentication) {
+    @Value("${bezkoder.app.jwtExpirationMs}")
+    private int jwtExpirationMs; // thời gian tồn tại của chuỗi jwt
 
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateJwtToken(Authentication authentication) { // Tạo ra jwt từ thông tin user
 
-		return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-				.signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
-	}
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
-	public String getUserNameFromJwtToken(String token) {
-		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
-	}
+        // Tạo chuỗi json web token từ name của user.
+        return Jwts.builder().setSubject((userPrincipal.getUsername())).setIssuedAt(new Date()).setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
+    }
 
-	@ResponseStatus
-	public boolean validateJwtToken(String authToken) {
-		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
-			return true;
-		} catch (SignatureException e) {
-			logger.error("Invalid JWT signature: {}", e.getMessage());
-		} catch (MalformedJwtException e) {
-			logger.error("Invalid JWT token: {}", e.getMessage());
-		} catch (ExpiredJwtException e) {
-			logger.error("JWT token is expired: {}", e.getMessage());
-		} catch (UnsupportedJwtException e) {
-			logger.error("JWT token is unsupported: {}", e.getMessage());
-		} catch (IllegalArgumentException e) {
-			logger.error("JWT claims string is empty: {}", e.getMessage());
-		}
+    public String getUserNameFromJwtToken(String token) { // Lấy thông tin user từ jwt
+        return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+    }
 
-		return false;
-	}
+    public Long getUserIdFromJwtToken(String token) {
+        return Long.parseLong(Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject());
+    }
+
+    @ResponseStatus
+    public boolean validateJwtToken(String authToken) {
+        try {
+            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        }
+
+        return false;
+    }
 }

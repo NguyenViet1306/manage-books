@@ -18,14 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.bezkoder.springjwt.models.Role;
 import com.bezkoder.springjwt.models.User;
@@ -45,70 +38,65 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-	@Autowired
-	AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-	// @Autowired
-//  UserRepository userRepository;
-	@Autowired
-	IUserService iUserService;
+    @Autowired
+    IUserService iUserService;
 
-//  @Autowired
-//  RoleRepository roleRepository;
+    @Autowired
+    IRoleService iRoleService;
 
-	@Autowired
-	IRoleService iRoleService;
+    @Autowired
+    PasswordEncoder encoder;
 
-	@Autowired
-	PasswordEncoder encoder;
+    @Autowired
+    JwtUtils jwtUtils;
 
-	@Autowired
-	JwtUtils jwtUtils;
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+                .collect(Collectors.toList());
 
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
-				.collect(Collectors.toList());
+        if (userDetails.getBlockUser(true)) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok(
+                new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+    }
 
-		if(userDetails.getBlockUser(true)) {
-			return new ResponseEntity(HttpStatus.BAD_REQUEST);
-		}
-		return ResponseEntity.ok(
-				new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
-	}
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        if (iUserService.existsByUsername(signUpRequest.getUsername())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+        }
 
-	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-		if (iUserService.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-		}
+        if (iUserService.existsByEmail(signUpRequest.getEmail())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+        }
 
-		if (iUserService.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-		}
+        // Create new user's account
+        User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
+                encoder.encode(signUpRequest.getPassword()), signUpRequest.getBlockUser());
 
-		// Create new user's account
-		User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()), signUpRequest.getBlockUser());
+        Set<String> strRoles = signUpRequest.getRole();
+        Set<Role> roles = new HashSet<>();
 
-		Set<String> strRoles = signUpRequest.getRole();
-		Set<Role> roles = new HashSet<>();
-
-		if (strRoles == null) {
-			Role userRole = iRoleService.findByName(strRoles.toString())
-					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			roles.add(userRole);
-		} else {
-			strRoles.forEach(role -> {
-				Optional<Role> userRole = iRoleService.findByName(role);
+        if (strRoles == null) {
+            Role userRole = iRoleService.findByName(strRoles.toString())
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                Optional<Role> userRole = iRoleService.findByName(role);
 //        switch (role) {
 //        case "admin":
 //          Role adminRole = iRoleService.findByName(ERole.ROLE_ADMIN)
@@ -127,42 +115,49 @@ public class AuthController {
 //              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 //          roles.add(userRole);
 //        }userRole
-				if (userRole.isPresent()) {
-					roles.add(userRole.get());
-				}
+                if (userRole.isPresent()) {
+                    roles.add(userRole.get());
+                }
 //                else {
 //                    userRole.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 //                }
-			});
+            });
 
-		}
-		user.setRoles(roles);
-		iUserService.save(user);
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
-	}
+        }
+        user.setRoles(roles);
+        iUserService.save(user);
+        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
 
-	@PutMapping("/change-password")
+    @PutMapping("/change-password")
     @SecurityRequirement(name = "bearerAuth")
-	@PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
-	public ResponseEntity<User> changePassword(@Valid @RequestBody ChangePassword changePassword,
-			@RequestParam Long id) {
-		User user = iUserService.findById(id).get();
-		PasswordEncoder passencoder = new BCryptPasswordEncoder();
-		String encodedPassword = passencoder.encode(changePassword.getPasswordNew());
-		// sử dụng matches() để so sánh 2 chuỗi string
-		if (passencoder.matches(changePassword.getPasswordOld(), user.getPassword())) {
-			user.setPassword(encodedPassword);
-			iUserService.save(user);
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-	
-	@DeleteMapping
-	@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER','USER')")
+    public ResponseEntity<User> changePassword(@Valid @RequestBody ChangePassword changePassword,
+                                               @RequestParam Long id) {
+        User user = iUserService.findById(id).get();
+        PasswordEncoder passencoder = new BCryptPasswordEncoder();
+        String encodedPassword = passencoder.encode(changePassword.getPasswordNew());
+        // sử dụng matches() để so sánh 2 chuỗi string
+        if (passencoder.matches(changePassword.getPasswordOld(), user.getPassword())) {
+            user.setPassword(encodedPassword);
+            iUserService.save(user);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-	public ResponseEntity<User> blockAndUnblockUser(@RequestParam("id") Long id){
-		iUserService.blockUser(id);
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
+    public ResponseEntity<User> blockAndUnblockUser(@RequestParam("id") Long id) {
+        iUserService.blockUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<List<User>> getAllUsers() {
+		return new ResponseEntity<>(iUserService.findAll(), HttpStatus.OK);
+    }
 }

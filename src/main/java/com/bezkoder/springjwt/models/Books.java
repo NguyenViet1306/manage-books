@@ -14,11 +14,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 
 @Entity
 @Table(name = "books")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Books {
 
 	@Id
@@ -32,16 +37,29 @@ public class Books {
 	@Column(name = "author")
 	private String author;
 
+//    @Column(name = "category_id")
+//    private String categoryId;
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "category_id", columnDefinition = "id", insertable = false, updatable = true)
 	private Category category;
 
-//	@ManyToOne(fetch = FetchType.EAGER)
-//	@JoinColumn(name = "user_id", columnDefinition = "id", insertable = false, updatable = true)
-//	private User user;
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "user_id", columnDefinition = "id", insertable = true, updatable = false)
+	@JsonIgnoreProperties({"email","password","roles","blockUser"})
+	private User user;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createat;
 
+//	@JsonIgnore
+	@JsonIgnoreProperties({"username","email","password","roles","blockUser","id"})
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public void setCreateat(Date createat) {
+		this.createat = createat;
+	}
 }

@@ -3,7 +3,6 @@ package com.bezkoder.springjwt.security.services;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -13,8 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.bezkoder.springjwt.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.ToString;
 
+// class chuyển thông tin user vào UserDetail mặc định của Spring boot
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
@@ -52,6 +51,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 
+	// cài đặt role cho user
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
