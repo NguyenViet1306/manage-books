@@ -1,11 +1,8 @@
 package com.bezkoder.springjwt.controllers;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.bezkoder.springjwt.models.Role;
@@ -151,6 +148,7 @@ public class BooksController {
                 if (userDetails.getId().equals(booksFind.get().getUser().getId())
                         // chuyen kieu du lieu của String "ROLE_ADMIN" sang Authorities
                         || userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+                    books.setUpdateat(Date.from(Instant.now()));
                     Books booksUpdate = iBooksService.save(books);
                     return new ResponseEntity<>(booksUpdate, HttpStatus.OK);
                 }

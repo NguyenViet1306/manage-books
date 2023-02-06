@@ -45,13 +45,17 @@ public class Books {
 	private Category category;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "user_id", columnDefinition = "id", insertable = true, updatable = false)
+	@JoinColumn(name = "user_id", columnDefinition = "id", insertable = false, updatable = false)
 	@JsonIgnoreProperties({"email","password","roles","blockUser"})
 	private User user;
 
 	@Column(name = "created_at", nullable = false, updatable = false)
-	@Temporal(TemporalType.TIMESTAMP)
+	@Temporal(TemporalType.DATE)
 	private Date createat;
+
+	@Column(name = "update_at", nullable = false, updatable = true)
+	@Temporal(TemporalType.DATE)
+	private Date updateat;
 
 //	@JsonIgnore
 	@JsonIgnoreProperties({"username","email","password","roles","blockUser","id"})
